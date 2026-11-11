@@ -54,6 +54,8 @@ Skills-AI-Factory/
 2. Mantener `SKILL.md` por debajo de 500 líneas; el detalle va en `references/`.
 3. Añadir la fila en la tabla de arriba.
 
+Las pruebas de `tests/` corren en CI (`.github/workflows/ci.yml`) en cada pull request y en cada push a `main`; mantenga `bash tests/skill.test.sh` en verde al agregar o modificar una skill.
+
 ## Licencia
 
 MIT.

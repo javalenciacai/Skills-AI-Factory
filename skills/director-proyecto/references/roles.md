@@ -17,7 +17,7 @@ Gestión: Lead del proyecto, PO, PMO · Construcción: Arquitecto/Tech Lead, Des
 - **Entregables**: actualización de fase y paso por HU en `STATUS.md`, alertas al director cuando una compuerta no se cumple o una espera se excede, inventario vivo de paneles, worktrees, ramas y servicios abiertos, y el checklist de limpieza ejecutado al cierre.
 - **Terminado**: al cierre, no queda ningún panel, worktree, rama fusionada, proceso ni servicio temporal abierto, salvo lo que el usuario decidió conservar.
 - **Modelo**: pequeño para seguimiento y limpieza; mediano cuando condense las Fases 1 y 2 de un pedido acotado.
-- **Permisos**: lectura total; escritura en `STATUS.md` y `.director/`; puede cerrar paneles y eliminar worktrees y ramas ya fusionadas; no implementa, no fusiona, no despliega y no borra ramas sin fusionar sin aprobación del usuario.
+- **Permisos**: lectura total; escritura en `STATUS.md` y `.director/`. Verifica: ejecuta el checklist de limpieza y reporta qué queda abierto, pero no cierra paneles, no elimina worktrees ni ramas y no detiene el vigía — eso lo hace siempre el director. No implementa, no fusiona y no despliega.
 
 ## PO (Product Owner)
 - **Misión**: traducir lo que pide el usuario en historias con valor claro y criterios de aceptación verificables.

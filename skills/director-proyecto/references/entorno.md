@@ -41,8 +41,8 @@ Obtenga la versión (`<comando> --version` o `-V`) y la ayuda (`<comando> --help
 - ¿Cómo se aplica una distribución ordenada (mosaico u otra) a los paneles de una agrupación?
 - ¿Cómo se asegura que lo creado quede visible en la sesión que mira el usuario y no desacoplado u oculto?
 - ¿Cómo se envía una línea al panel del director desde otro panel (notificación nativa o envío de texto)? Lo usa el vigía.
-- ¿Cómo se lee solo el final de la salida de un panel (últimas 20 o 30 líneas), para diagnósticos baratos?
-- ¿Tiene funciones propias para agentes (lanzarlos, ver su estado, notificar al terminar, espacios de trabajo)? Si las tiene, úselas en lugar de simular con envío de texto.
+- ¿Cómo se lee solo el final de la salida de un panel (últimas 20 o 30 líneas), para diagnósticos baratos? Si el multiplexor devuelve la lectura como JSON (por ejemplo, Orca: `terminal read` entrega el texto en un campo `tail`), lea solo ese campo y solo sus últimas líneas; nunca el volcado completo del búfer.
+- ¿Tiene funciones propias para agentes (lanzarlos, ver su estado, notificar al terminar, espacios de trabajo)? Si las tiene, úselas en lugar de simular con envío de texto, salvo cuando no admita las restricciones de permisos del rol (ver sección 3).
 
 Tabla de orientación para los más comunes (verifique siempre contra la ayuda de la versión instalada):
 
@@ -57,7 +57,19 @@ Tabla de orientación para los más comunes (verifique siempre contra la ayuda d
 | Panel en el worktree | `tmux split-window -t VENTANA -c RUTA` | `zellij action new-pane --cwd RUTA` | `wezterm cli split-pane --cwd RUTA` |
 | Distribución | `tmux select-layout -t VENTANA tiled` | layouts de zellij (`--layout`) | divisiones al crear |
 
-Para multiplexores que no estén en la tabla (wmux, orca, herdr u otros), no suponga nada: todo sale de su ayuda. Si la ayuda no basta para alguna operación, dígaselo al usuario y pregúntele cómo la hace él antes de delegar.
+Fila adicional para Orca, con los comandos verificados el 2026-11-11 contra Orca CLI 1.4.253 (vuelva a verificarlos en cada sesión, como exige el paso 4 de esta sección; una versión más nueva puede cambiar la sintaxis):
+
+| Operación | orca |
+|---|---|
+| Crear | `orca terminal create --worktree current --title "<rol>:<tarea>" --shell git-bash [--command ...] --json` |
+| Enviar | `orca terminal send --terminal <h> --text '<texto>' --enter --json` |
+| Leer (solo diagnóstico) | `orca terminal read --terminal <h> --screen --json` (texto en el campo `tail`) |
+| Esperar | `orca terminal wait --terminal <h> --for exit` (o `--for tui-idle`) `--timeout-ms <N> --json` |
+| Cerrar | `orca terminal close --terminal <h> --json` |
+| Agrupación por worktree | nativa: `--worktree <selector>` en la creación, sin paso aparte |
+| Aviso al panel del director | `orca terminal send --terminal <panel-director> --text '{msg}' --enter` |
+
+Para multiplexores que no estén en la tabla (wmux, herdr u otros), no suponga nada: todo sale de su ayuda. Si la ayuda no basta para alguna operación, dígaselo al usuario y pregúntele cómo la hace él antes de delegar.
 
 Anote los comandos verificados junto con la versión. En una sesión posterior sirven como punto de partida, pero se vuelven a verificar con el panel de prueba antes de usarlos.
 
@@ -83,7 +95,9 @@ Cómo lanzar un rol con el modelo elegido (verifique con `--help` si la versión
 - Modo interactivo: `<harness> --model <modelo-del-nivel> [opción de esfuerzo]`, con la línea que apunta al brief como primer mensaje.
 - Tareas mecánicas: use el modo no interactivo del harness (`-p`, `--print`, `exec` o equivalente), redirigiendo la salida a un archivo en `.director/reportes/`; el panel sigue siendo visible y termina solo.
 
-Si el harness permite restringir herramientas o permisos al lanzar (por ejemplo, `--allowedTools` en Claude Code), úselo según los permisos del rol en `roles.md`.
+Si el harness permite restringir herramientas o permisos al lanzar (por ejemplo, el flag de herramientas permitidas del harness), úselo según los permisos del rol en `roles.md`. **Las restricciones de permisos del rol tienen prioridad sobre el lanzamiento nativo de agentes del multiplexor.** Si la función nativa del multiplexor para lanzar agentes no admite pasarle esas restricciones, no la use para ese rol: lance el harness con sus flags de permisos dentro de un panel simple, con `--command` (ejemplo en Orca: `orca terminal create --worktree current --title "<rol>:<tarea>" --shell git-bash --command "<harness> --allowedTools ... --model ..."`).
+
+Cuidado con los flags variádicos: opciones como `--allowedTools` en algunos harnesses consumen todo lo que sigue en la línea, incluido el mensaje o el prompt. Coloque la línea que apunta al brief **antes** de ese tipo de flags, o ciérrelos explícitamente con `--` antes de agregar el mensaje. Verifique el orden correcto con el panel de prueba de la sección 2 antes de usarlo en una delegación real.
 
 ## 4. Subagentes: solo con autorización expresa
 
@@ -105,6 +119,8 @@ DIRECTOR_AVISO="<comando verificado con {msg}>" <ruta-skill>/scripts/vigia.sh <r
 Pruébelo creando un estado de prueba (`echo "LISTO|prueba" > <.director>/estado/prueba`) y confirmando que la línea `[vigia] prueba POR_LEER` llega a su panel; luego borre el archivo. Si no hay forma de avisar al panel del director, lance el vigía sin `DIRECTOR_AVISO` (mostrará las novedades en su propio panel) y apóyese en `scripts/estado.sh` cada vez que el usuario escriba.
 
 Umbrales ajustables por variables de entorno: `ACK_SEG` (120 segundos para el acuse) y `PLAZO_MIN` (15 minutos sin latido por defecto; por tarea, con el archivo `estado/<id>.plazo`). Para detenerlo: `touch <.director>/estado/.parar`.
+
+Si el multiplexor ofrece una espera nativa de costo cero (por ejemplo, `orca terminal wait --for exit|tui-idle`, o `tmux wait-for`), puede usarla como complemento del vigía cuando el usuario pidió no recibir confirmaciones intermedias: espera a que un panel termine o quede inactivo sin gastar tokens del director. Nunca la use en lugar de los archivos de ACK: esa espera nativa solo observa el panel, no reemplaza el acuse ni el reporte escrito.
 
 ## 5.1 Otros directores
 

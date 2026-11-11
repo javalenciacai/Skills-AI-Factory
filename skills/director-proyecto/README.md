@@ -17,6 +17,8 @@ director-proyecto/
 │   │   ├── estado.sh              # una línea por delegación: estado, antigüedad, alerta
 │   │   └── vigia.sh               # supervisa sin gastar tokens y avisa al director
 │   └── evals/                     # casos de prueba de la skill
+├── tests/                         # pruebas de estado.sh y de forma de la skill, corren en CI
+├── .github/workflows/ci.yml       # CI: ejecuta tests/ en cada PR y push a main
 ├── instalar.ps1                   # instala la skill en el perfil del usuario
 ├── empaquetar.ps1                 # genera dist\director-proyecto.skill
 └── CLAUDE.md                      # contexto para seguir trabajando la skill con un agente
@@ -25,7 +27,7 @@ director-proyecto/
 ## Requisitos
 
 - Un multiplexor de terminal (tmux, zellij, wezterm, wmux, orca, herdr u otro). La skill lo detecta y aprende a usarlo al inicio de cada sesión.
-- Un harness de agente (por ejemplo, Claude Code).
+- Un harness de agente (uno de los que detecta y aprende a operar `references/entorno.md`).
 - `bash` disponible para los scripts `estado.sh` y `vigia.sh`. En Windows: Git Bash o WSL.
 - `git`, para los worktrees paralelos.
 
@@ -53,4 +55,4 @@ Dentro de una sesión del multiplexor, abra el agente en el proyecto que quiere 
 
 ## Pruebas
 
-Los casos están en `skills/director-proyecto/evals/`. Con Claude Code, desde la carpeta de la skill: `claude plugin eval .` (consume modelo).
+Los casos están en `skills/director-proyecto/evals/`. Con un harness que admita evaluar skills de esta forma, desde la carpeta de la skill: `<harness> plugin eval .` (consume modelo).

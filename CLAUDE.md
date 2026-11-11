@@ -33,6 +33,13 @@ echo "LISTO|prueba" > $D/estado/t1
 skills/director-proyecto/scripts/estado.sh $D      # debe mostrar: t1 LISTO 0m POR_LEER prueba
 ```
 
+La suite automatizada vive en `tests/` y corre en CI (`.github/workflows/ci.yml`) en cada pull request y en cada push a `main`:
+
+```bash
+bash tests/estado.test.sh   # casos de scripts/estado.sh, incluido el estado desconocido
+bash tests/skill.test.sh    # frontmatter, tamaño de SKILL.md y ausencia de nombres de modelo por proveedor
+```
+
 ## Estado actual
 
 El trabajo pendiente y el historial viven en Plane, proyecto `SAF` (Skills AI Factory), bajo la iniciativa `SAF-1`. No se mantiene una lista de pendientes en el repositorio.
