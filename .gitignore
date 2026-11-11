@@ -2,3 +2,4 @@ dist/
 .director/
 *.skill
 .remember/
+.atl/
