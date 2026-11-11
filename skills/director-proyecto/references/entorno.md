@@ -71,10 +71,17 @@ for c in claude codex gemini opencode aider; do command -v "$c" >/dev/null && ec
 
 Use por defecto el mismo harness en el que corre el director. Use otro solo si el usuario lo pide o si el proyecto ya lo usa.
 
-Cómo fijar el modelo al lanzar un rol en un panel (verifique con `--help` si la versión instalada difiere):
+La skill no nombra modelos concretos: trabaja con tres niveles de capacidad (pequeño, mediano, grande; ver sección 3 de SKILL.md) y usted los traduce una vez por sesión a los modelos reales del harness. Para construir el mapeo:
 
-- Claude Code: `claude --model haiku|sonnet|opus`, con la línea que apunta al brief como primer mensaje. Para tareas mecánicas use el modo no interactivo (`-p`), redirigiendo la salida a un archivo en `.director/reportes/`; el panel sigue siendo visible y termina solo.
-- Otros harnesses: consulte `--help` buscando `--model` o equivalente y mapee a los tres niveles (pequeño, mediano, grande).
+1. Liste los modelos que el harness ofrece (`<harness> --help`, buscando `--model` o equivalente; si el harness tiene un comando o menú para listar modelos, úselo). Si el proyecto o la organización ya tiene un ruteo de modelos escrito (por ejemplo, un archivo de configuración con niveles por rol), respételo en lugar de deducirlo.
+2. Asigne a **pequeño** el modelo más barato y rápido de la familia, a **mediano** el modelo de trabajo habitual y a **grande** el más capaz. Si la familia tiene menos de tres tamaños, repita un modelo en dos niveles y diferéncielos por esfuerzo de razonamiento.
+3. Si el harness expone el esfuerzo de razonamiento como opción aparte (`--effort`, `--thinking`, `--reasoning` o similar), anote cómo se fija: bajo para lo mecánico, medio para construir, alto para diseñar, revisar o depurar.
+4. Verifique el mapeo lanzando un panel de prueba con cada nivel y confirmando que el modelo arranca; escriba el resultado en `STATUS.md`, sección "Entorno" (nivel → modelo → opción de esfuerzo).
+
+Cómo lanzar un rol con el modelo elegido (verifique con `--help` si la versión instalada difiere):
+
+- Modo interactivo: `<harness> --model <modelo-del-nivel> [opción de esfuerzo]`, con la línea que apunta al brief como primer mensaje.
+- Tareas mecánicas: use el modo no interactivo del harness (`-p`, `--print`, `exec` o equivalente), redirigiendo la salida a un archivo en `.director/reportes/`; el panel sigue siendo visible y termina solo.
 
 Si el harness permite restringir herramientas o permisos al lanzar (por ejemplo, `--allowedTools` en Claude Code), úselo según los permisos del rol en `roles.md`.
 
@@ -126,4 +133,4 @@ Si el usuario o la organización usa otra vía para comunicar directores (un can
 
 ## 6. Registro en STATUS.md
 
-Escriba en `STATUS.md`, sección "Entorno": multiplexor usado, panel del director, comandos verificados (paneles, agrupaciones por worktree, distribución y aviso al director), harness y mapeo de niveles de modelo.
+Escriba en `STATUS.md`, sección "Entorno": multiplexor usado, panel del director, comandos verificados (paneles, agrupaciones por worktree, distribución y aviso al director), harness y mapeo de niveles de modelo (pequeño, mediano, grande → modelo real y opción de esfuerzo).

@@ -28,7 +28,7 @@ Cada una se detalla más abajo. Ninguna se relaja por conveniencia, velocidad o 
 
 Esta regla no tiene excepciones por conveniencia, velocidad ni tamaño de la tarea.
 
-- **Todo rol se lanza en un panel nuevo del multiplexor detectado**, distinto del panel donde corre el director. Allí se inicia el harness del rol (por ejemplo, `claude --model sonnet`) y se le envía el brief.
+- **Todo rol se lanza en un panel nuevo del multiplexor detectado**, distinto del panel donde corre el director. Allí se inicia el harness del rol con el modelo del nivel elegido (por ejemplo, `<harness> --model <modelo-nivel-mediano>`) y se le envía el brief.
 - **Nunca lance roles como subagentes, tareas en segundo plano o herramientas de delegación interna dentro del panel del director.** Un subagente en el mismo panel comparte el proceso y la terminal del director: su trabajo es, en la práctica, trabajo del director, bloquea la conversación con el usuario y llena su contexto. Eso es exactamente lo que esta skill busca evitar.
 - **Verifique antes de enviar el brief** que el identificador del panel destino es diferente al del director (en tmux, compare con `$TMUX_PANE`). Si coincide, no envíe nada: cree otro panel.
 - **Sin multiplexor activo no hay delegación en el mismo panel.** Si hay un multiplexor instalado pero la sesión no corre dentro de él, pida al usuario que relance el director dentro de una sesión del multiplexor (dele el comando exacto, por ejemplo `tmux new -s director`); no abra una sesión separada por su cuenta, porque los roles quedarían fuera de la vista del usuario. Si no hay ningún multiplexor instalado, deténgase, explíquelo y proponga instalar uno. Solo puede usar subagentes si el usuario lo autoriza expresamente en esa conversación, y debe recordarle que perderá la disponibilidad del director mientras trabajen.
@@ -157,13 +157,17 @@ Muestre al usuario el plan en forma breve (tabla: fase, tarea, rol, modelo, depe
 
 ## 3. Elegir el modelo según la tarea
 
-No use siempre el modelo más grande. El costo y la latencia importan, y un modelo pequeño bien instruido resuelve bien las tareas acotadas. Piense en tres niveles y tradúzcalos al harness detectado (en Claude: pequeño = Haiku, mediano = Sonnet, grande = Opus).
+No use siempre el modelo más grande. El costo y la latencia importan, y un modelo pequeño bien instruido resuelve bien las tareas acotadas. Esta skill no nombra modelos concretos: cada proveedor cambia los suyos y cada instalación tiene familias distintas (Anthropic, OpenAI, Google, MiniMax u otras). Piense en tres **niveles de capacidad** y, al inicio de la sesión, tradúzcalos a los modelos que ofrece el harness detectado (ver `references/entorno.md`, sección 3). Registre el mapeo en `STATUS.md` y úselo toda la sesión.
 
-| Nivel | Cuándo usarlo | Ejemplos |
-|---|---|---|
-| Pequeño | Tareas mecánicas, acotadas, con resultado verificable | buscar en el código, leer y resumir archivos, ejecutar una suite de pruebas existente, formatear, lint, actualizar documentación simple, reportes de estado |
-| Mediano | Trabajo de construcción estándar | implementar una funcionalidad, escribir pruebas automatizadas, consultas SQL, scripts de CI, corregir defectos con causa conocida, redactar entregables |
-| Grande | Razonamiento difícil o decisiones de alto impacto | arquitectura y diseño, revisión de seguridad, depuración de causa desconocida, migraciones de datos riesgosas, refactorizaciones transversales, resolver conflictos entre roles |
+| Nivel | Tipo de modelo | Cuándo usarlo | Ejemplos |
+|---|---|---|---|
+| Pequeño | El más barato y rápido de la familia; poco razonamiento, buen seguimiento de instrucciones | Tareas mecánicas, acotadas, con resultado verificable | buscar en el código, leer y resumir archivos, ejecutar una suite de pruebas existente, formatear, lint, actualizar documentación simple, reportes de estado |
+| Mediano | El modelo de trabajo de la familia; equilibrio entre capacidad, costo y velocidad | Trabajo de construcción estándar | implementar una funcionalidad, escribir pruebas automatizadas, consultas SQL, scripts de CI, corregir defectos con causa conocida, redactar entregables |
+| Grande | El más capaz de la familia; razonamiento profundo, aunque sea más lento y caro | Razonamiento difícil o decisiones de alto impacto | arquitectura y diseño, revisión de seguridad, depuración de causa desconocida, migraciones de datos riesgosas, refactorizaciones transversales, resolver conflictos entre roles |
+
+Si el harness permite fijar el **esfuerzo de razonamiento** por separado del modelo (por ejemplo, un nivel de "thinking" o "effort"), trátelo como un segundo dial: bajo para lo mecánico, medio para construir, alto para diseñar, revisar o depurar. Un modelo mediano con esfuerzo alto suele rendir más que uno grande con esfuerzo bajo, y cuesta menos.
+
+Si una familia no tiene tres tamaños, mapee dos niveles al mismo modelo y diferéncielos por esfuerzo. Si solo hay un modelo disponible, úselo para todo y ajuste solo el esfuerzo; anótelo en `STATUS.md` para que el usuario sepa que no hay ahorro por nivel.
 
 Reglas de ajuste:
 
