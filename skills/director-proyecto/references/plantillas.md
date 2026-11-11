@@ -122,20 +122,22 @@ Acuse de recibo: al leer un mensaje, el destinatario deja de inmediato en el buz
 
 ## 5. Checklist de limpieza al cierre
 
+Lo ejecuta como verificación el panel de limpieza delegado (o el Lead del proyecto, si existe): revisa qué queda abierto y lo reporta. Cerrar paneles, eliminar worktrees y ramas, y detener el vigía lo hace siempre el director, con ese reporte en mano.
+
 ```markdown
 - [ ] Todas las delegaciones en `LEIDO` (`scripts/estado.sh` no muestra tareas abiertas)
 - [ ] Vigía detenido y su panel cerrado
 - [ ] Mensajes de otros directores acusados y respondidos
-- [ ] Paneles efímeros cerrados y agrupaciones por worktree eliminadas (comparar con "Recursos abiertos")
+- [ ] Ningún panel efímero queda abierto y las agrupaciones por worktree están eliminadas (comparar con "Recursos abiertos")
 - [ ] Ningún proceso de rol corriendo en segundo plano
-- [ ] Worktrees de la sesión eliminados (`git worktree list` solo muestra el principal y los que el usuario decidió conservar); `git worktree prune` ejecutado
+- [ ] No quedan worktrees de la sesión (`git worktree list` solo muestra el principal y los que el usuario decidió conservar); `git worktree prune` ya ejecutado
 - [ ] Ramas locales ya fusionadas eliminadas; ramas sin fusionar reportadas al usuario
 - [ ] Servidores locales, contenedores y ambientes efímeros detenidos
 - [ ] Temporales y briefs eliminados; `.director/` solo con STATUS.md, contexto.md y reportes a conservar
 - [ ] Tabla "Recursos abiertos" vacía o con justificación por fila
 - [ ] Solicitudes entre proyectos respondidas o canceladas; directores involucrados avisados del cierre
 - [ ] Registro propio retirado de `~/.directores/registro/` (al terminar la sesión)
-- [ ] Panel del Lead del proyecto cerrado (último paso)
+- [ ] Panel del Lead del proyecto, listo para que el director lo cierre en cuanto lea este reporte (último paso)
 - [ ] Comando de listado del multiplexor (por ejemplo, `orca terminal list`) confirma que no queda nada de la sesión; un identificador muerto que el CLI no logre cerrar se reporta en `STATUS.md`, no se reintenta indefinidamente
 ```
 

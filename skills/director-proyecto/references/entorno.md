@@ -42,7 +42,7 @@ Obtenga la versión (`<comando> --version` o `-V`) y la ayuda (`<comando> --help
 - ¿Cómo se asegura que lo creado quede visible en la sesión que mira el usuario y no desacoplado u oculto?
 - ¿Cómo se envía una línea al panel del director desde otro panel (notificación nativa o envío de texto)? Lo usa el vigía.
 - ¿Cómo se lee solo el final de la salida de un panel (últimas 20 o 30 líneas), para diagnósticos baratos? Si el multiplexor devuelve la lectura como JSON (por ejemplo, Orca: `terminal read` entrega el texto en un campo `tail`), lea solo ese campo y solo sus últimas líneas; nunca el volcado completo del búfer.
-- ¿Tiene funciones propias para agentes (lanzarlos, ver su estado, notificar al terminar, espacios de trabajo)? Si las tiene, úselas en lugar de simular con envío de texto.
+- ¿Tiene funciones propias para agentes (lanzarlos, ver su estado, notificar al terminar, espacios de trabajo)? Si las tiene, úselas en lugar de simular con envío de texto, salvo cuando no admita las restricciones de permisos del rol (ver sección 3).
 
 Tabla de orientación para los más comunes (verifique siempre contra la ayuda de la versión instalada):
 
@@ -95,7 +95,7 @@ Cómo lanzar un rol con el modelo elegido (verifique con `--help` si la versión
 - Modo interactivo: `<harness> --model <modelo-del-nivel> [opción de esfuerzo]`, con la línea que apunta al brief como primer mensaje.
 - Tareas mecánicas: use el modo no interactivo del harness (`-p`, `--print`, `exec` o equivalente), redirigiendo la salida a un archivo en `.director/reportes/`; el panel sigue siendo visible y termina solo.
 
-Si el harness permite restringir herramientas o permisos al lanzar (por ejemplo, `--allowedTools` en Claude Code), úselo según los permisos del rol en `roles.md`. **Las restricciones de permisos del rol tienen prioridad sobre el lanzamiento nativo de agentes del multiplexor.** Si la función nativa del multiplexor para lanzar agentes no admite pasarle esas restricciones, no la use para ese rol: lance el harness con sus flags de permisos dentro de un panel simple, con `--command` (ejemplo en Orca: `orca terminal create --worktree current --title "<rol>:<tarea>" --shell git-bash --command "<harness> --allowedTools ... --model ..."`).
+Si el harness permite restringir herramientas o permisos al lanzar (por ejemplo, el flag de herramientas permitidas del harness), úselo según los permisos del rol en `roles.md`. **Las restricciones de permisos del rol tienen prioridad sobre el lanzamiento nativo de agentes del multiplexor.** Si la función nativa del multiplexor para lanzar agentes no admite pasarle esas restricciones, no la use para ese rol: lance el harness con sus flags de permisos dentro de un panel simple, con `--command` (ejemplo en Orca: `orca terminal create --worktree current --title "<rol>:<tarea>" --shell git-bash --command "<harness> --allowedTools ... --model ..."`).
 
 Cuidado con los flags variádicos: opciones como `--allowedTools` en algunos harnesses consumen todo lo que sigue en la línea, incluido el mensaje o el prompt. Coloque la línea que apunta al brief **antes** de ese tipo de flags, o ciérrelos explícitamente con `--` antes de agregar el mensaje. Verifique el orden correcto con el panel de prueba de la sección 2 antes de usarlo en una delegación real.
 
