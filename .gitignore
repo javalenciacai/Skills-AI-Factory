@@ -1,0 +1,4 @@
+dist/
+.director/
+*.skill
+.remember/
