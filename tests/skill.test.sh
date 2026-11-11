@@ -19,7 +19,16 @@ check() {
 rc=0; grep -q '^name: director-proyecto$' "$SKILL_MD" || rc=1
 check "frontmatter name: director-proyecto" "$rc"
 
-desc_len=$(awk '/^description:/{sub(/^description: /,""); print length($0)}' "$SKILL_MD")
+# Mide la description completa dentro del frontmatter, también cuando es
+# YAML multilínea (`>-`, `|` o continuaciones indentadas), no solo su
+# primera línea física.
+desc_len=$(awk '
+  NR==1 && /^---$/ {fm=1; next}
+  fm && /^---$/ {exit}
+  fm && /^description:/ {d=1; sub(/^description:[ \t]*/,""); sub(/^[>|][-+]?[ \t]*$/,""); txt=$0; next}
+  d && /^[ \t]+/ {sub(/^[ \t]+/,""); txt=(txt=="" ? $0 : txt " " $0); next}
+  d {d=0}
+  END {print length(txt)}' "$SKILL_MD")
 rc=0; { [ -n "$desc_len" ] && [ "$desc_len" -le 1024 ]; } || rc=1
 check "description <= 1024 caracteres (actual: ${desc_len:-?})" "$rc"
 
