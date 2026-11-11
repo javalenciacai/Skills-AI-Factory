@@ -4,6 +4,8 @@
 
 Escriba el brief en `<.director>/briefs/<id>.md` y envíe al panel (siempre distinto al del director) una sola línea: `Lee <ruta absoluta>/briefs/<id>.md y ejecútalo.` Use siempre la ruta absoluta de `.director`, porque el rol puede estar en otro worktree. Sea específico en archivos y criterios: eso es lo que permite usar modelos más pequeños.
 
+`RECIBIDO`, `EN_CURSO`, `LISTO` y `BLOQUEADO` son palabras literales: se escriben tal cual, nunca se traducen ni se sustituyen por sinónimos. Lo único que varía en el brief es `<id>` en las rutas. Si un rol escribe un estado distinto a estos por error de tipeo, `scripts/estado.sh` lo trata igual que un `ENVIADO` sin acusar (alerta `SIN_ACK`), así que el director igual se entera.
+
 ```markdown
 # Rol: <rol> — Tarea: <id-corto>
 
@@ -134,6 +136,7 @@ Acuse de recibo: al leer un mensaje, el destinatario deja de inmediato en el buz
 - [ ] Solicitudes entre proyectos respondidas o canceladas; directores involucrados avisados del cierre
 - [ ] Registro propio retirado de `~/.directores/registro/` (al terminar la sesión)
 - [ ] Panel del Lead del proyecto cerrado (último paso)
+- [ ] Comando de listado del multiplexor (por ejemplo, `orca terminal list`) confirma que no queda nada de la sesión; un identificador muerto que el CLI no logre cerrar se reporta en `STATUS.md`, no se reintenta indefinidamente
 ```
 
 ## 6. Resumen de estado para el usuario

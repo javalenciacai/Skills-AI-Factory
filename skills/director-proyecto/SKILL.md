@@ -129,7 +129,7 @@ No reutilice comandos registrados en una sesión anterior sin volver a verificar
 
 Informe al usuario en una o dos líneas qué multiplexor detectó, su versión y que la verificación fue exitosa. No pregunte por el entorno: descúbralo.
 
-Luego cargue el contexto del proyecto sin explorarlo usted mismo. Si existe `.director/STATUS.md`, léalo: es su memoria entre sesiones. Si existe `.director/contexto.md`, léalo. Si no existe, su primera delegación es un panel de reconocimiento en nivel pequeño que lea `README`, `CLAUDE.md` o `AGENTS.md` y la estructura del repositorio, y escriba `.director/contexto.md` (máximo 40 líneas: propósito, stack, cómo compilar, probar y levantar, convenciones, carpetas clave). Ese archivo sirve a todos los roles y evita que cada uno gaste tokens redescubriendo el proyecto.
+Luego cargue el contexto del proyecto sin explorarlo usted mismo. Si existe `.director/STATUS.md`, léalo: es su memoria entre sesiones. Si existe `.director/contexto.md`, léalo. Si no existe, su primera delegación es un panel de reconocimiento en nivel pequeño que lea `README`, `CLAUDE.md` o `AGENTS.md` y la estructura del repositorio, y escriba `.director/contexto.md` (máximo 40 líneas: propósito, stack, cómo compilar, probar y levantar, convenciones, carpetas clave). Ese archivo sirve a todos los roles y evita que cada uno gaste tokens redescubriendo el proyecto. Puede omitir este panel de reconocimiento cuando la tarea toca un solo archivo conocido y usted ya tiene, de `README` o `CLAUDE.md`, el contexto que necesita: en ese caso escriba usted mismo una nota de una línea en `.director/contexto.md` en lugar de delegar la lectura.
 
 `STATUS.md` existe siempre, porque las reglas obligatorias dependen de él (entorno verificado, fase de cada HU, recursos abiertos), pero su tamaño es proporcional al trabajo:
 
@@ -184,7 +184,7 @@ Reglas de paneles:
 - **Siempre fuera del panel del director.** Cada rol tiene su propio panel; ver la regla obligatoria.
 - **Efímeros por defecto.** Un panel nace para una tarea, reporta y se cierra. Solo usted es permanente.
 - **Un Lead del proyecto permanente (opcional, máximo uno).** Además de usted, puede existir un solo rol permanente: el Lead del proyecto (ver `references/roles.md`). Es su apoyo para seguir el avance entre fases, vigilar que se cumplan las compuertas y, sobre todo, verificar al final que todo quede limpio. Ábralo cuando el trabajo involucre varias HUs, varios worktrees o más de una sesión. Reporta a usted, no ejecuta trabajo de construcción y no abre paneles salvo que usted lo autorice. Si se abre un Tech Lead permanente para un frente largo, ese ocupa el cupo y asume también las tareas de limpieza.
-- **Límite de concurrencia.** No más de 4 paneles de trabajo activos a la vez (ajústelo si el usuario lo pide). Más paneles multiplican costo y conflictos sin acelerar proporcionalmente.
+- **Límite de concurrencia.** No más de 4 paneles de trabajo activos a la vez (ajústelo si el usuario lo pide). Más paneles multiplican costo y conflictos sin acelerar proporcionalmente. Tenga en cuenta además los recursos del equipo anfitrión: varias sesiones de harness compiten por la misma memoria RAM. Si un panel falla al arrancar con un error de memoria del sistema operativo, espere a que un rol en curso termine, reintente una vez y, si vuelve a fallar, baje el límite de concurrencia y déjelo anotado en `STATUS.md`.
 - **Nombre claro.** Titule cada panel con `rol:tarea` (por ejemplo, `qa:login-e2e`) para que el usuario los identifique de un vistazo.
 - **Worktrees paralelos permitidos.** Los roles pueden trabajar en paralelo, cada uno en su propio `git worktree` y rama, con propiedad explícita de archivos en el brief. Usted puede abrir worktrees nuevos cuando haga falta (por ejemplo, `git worktree add ../<repo>-<hu>-<rol> -b <hu>/<rol>`), pero cada worktree que abra queda registrado en `STATUS.md` (ruta, rama, rol, panel) y **es su responsabilidad cerrarlo** cuando su trabajo se fusione o se descarte. Nunca deje un worktree huérfano.
 - **Cierre ordenado.** Antes de cerrar un panel, confirme que su reporte está en `STATUS.md` o en el archivo de reporte acordado. Lo que no quede escrito se pierde al cerrar.
@@ -196,7 +196,7 @@ Cada panel arranca con un brief que siga la plantilla de `references/plantillas.
 El ciclo de una delegación es siempre el mismo:
 
 1. Escriba el brief en `<.director>/briefs/<id>.md` y, si la tarea lo amerita, su plazo en `estado/<id>.plazo`.
-2. Abra el panel (visible, en la agrupación de su worktree) y lance el harness con el modelo elegido y los permisos del rol.
+2. Abra el panel (visible, en la agrupación de su worktree) y lance el harness con el modelo elegido y los permisos del rol. Las restricciones de permisos del rol tienen prioridad sobre el lanzamiento nativo de agentes del multiplexor: si esa función nativa no admite pasarlas, lance el harness dentro de un panel simple con sus flags de permisos (ver `references/entorno.md`, sección 3).
 3. Envíe al panel una sola línea: que lea el brief y lo ejecute. No pegue el brief en el panel. Escriba `ENVIADO` en `estado/<id>`.
 4. Confirme el ACK (`RECIBIDO`) y que la nota coincide con lo que pidió.
 5. El rol trabaja dejando latidos (`EN_CURSO`), escribe su reporte en `reportes/<id>.md` y marca `LISTO` o `BLOQUEADO`. El vigía le avisa.
@@ -266,7 +266,7 @@ El director orquesta, y orquestar incluye dejar todo cerrado. Al terminar un obj
 1. Confirme que todas las compuertas de las 4 fases se cumplieron y que la HU quedó cerrada con sus métricas.
 2. Pida a Delivery el paquete de entrega si corresponde.
 3. Actualice `STATUS.md` con lo entregado y una sección breve de lecciones aprendidas (qué brief funcionó, qué nivel de modelo sobró o faltó).
-4. **Limpieza obligatoria**, delegada al Lead del proyecto si existe (o a un panel de limpieza en nivel pequeño), y verificada por usted con el checklist de limpieza de `references/plantillas.md`:
+4. **Limpieza obligatoria**, cuya verificación delega al Lead del proyecto si existe (o a un panel de limpieza en nivel pequeño: ese panel ejecuta el checklist de `references/plantillas.md` y le reporta qué encontró), y que usted mismo ejecuta y confirma con ese reporte en mano. Cerrar paneles, eliminar worktrees y detener el vigía lo hace siempre usted (o el Lead, si tiene permisos sobre esos recursos): un rol no puede cerrar el panel en el que está corriendo.
    - Ninguna delegación sin cerrar: todos los estados en `LEIDO` (o cancelados con constancia en `STATUS.md`).
    - Vigía detenido (crear `estado/.parar`) y su panel cerrado.
    - Todos los paneles efímeros cerrados y sus agrupaciones por worktree eliminadas; ningún proceso de rol corriendo.

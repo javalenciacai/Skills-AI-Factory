@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run estado.sh tests
+        run: bash tests/estado.test.sh
+      - name: Run skill shape tests
+        run: bash tests/skill.test.sh
