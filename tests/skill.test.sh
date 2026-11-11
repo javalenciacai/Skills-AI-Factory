@@ -16,16 +16,16 @@ check() {
   fi
 }
 
-grep -q '^name: director-proyecto$' "$SKILL_MD"
-check "frontmatter name: director-proyecto" $?
+rc=0; grep -q '^name: director-proyecto$' "$SKILL_MD" || rc=1
+check "frontmatter name: director-proyecto" "$rc"
 
 desc_len=$(awk '/^description:/{sub(/^description: /,""); print length($0)}' "$SKILL_MD")
-[ -n "$desc_len" ] && [ "$desc_len" -le 1024 ]
-check "description <= 1024 caracteres (actual: ${desc_len:-?})" $?
+rc=0; { [ -n "$desc_len" ] && [ "$desc_len" -le 1024 ]; } || rc=1
+check "description <= 1024 caracteres (actual: ${desc_len:-?})" "$rc"
 
 lineas=$(wc -l < "$SKILL_MD")
-[ "$lineas" -lt 500 ]
-check "SKILL.md < 500 líneas (actual: $lineas)" $?
+rc=0; [ "$lineas" -lt 500 ] || rc=1
+check "SKILL.md < 500 líneas (actual: $lineas)" "$rc"
 
 # Nombres concretos de modelo por proveedor están prohibidos; nombres de
 # familia (Anthropic, OpenAI, Google, MiniMax, ...) sí están permitidos.
