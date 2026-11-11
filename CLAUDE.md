@@ -35,4 +35,4 @@ skills/director-proyecto/scripts/estado.sh $D      # debe mostrar: t1 LISTO 0m P
 
 ## Estado actual
 
-Ver `PENDIENTES.md`.
+El trabajo pendiente y el historial viven en Plane, proyecto `SAF` (Skills AI Factory), bajo la iniciativa `SAF-1`. No se mantiene una lista de pendientes en el repositorio.

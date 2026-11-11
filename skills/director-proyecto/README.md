@@ -19,8 +19,7 @@ director-proyecto/
 │   └── evals/                     # casos de prueba de la skill
 ├── instalar.ps1                   # instala la skill en el perfil del usuario
 ├── empaquetar.ps1                 # genera dist\director-proyecto.skill
-├── CLAUDE.md                      # contexto para seguir trabajando la skill con un agente
-└── PENDIENTES.md                  # lo que falta validar y mejorar
+└── CLAUDE.md                      # contexto para seguir trabajando la skill con un agente
 ```
 
 ## Requisitos

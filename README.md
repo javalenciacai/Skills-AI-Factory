@@ -37,8 +37,7 @@ Skills-AI-Factory/
 │       └── evals/          # casos de prueba
 ├── instalar.ps1            # instalación local en Windows (enlace o copia)
 ├── empaquetar.ps1          # genera dist\<nombre>.skill
-├── CLAUDE.md               # contexto para trabajar el catálogo con un agente
-└── PENDIENTES.md           # lo que falta validar y mejorar
+└── CLAUDE.md               # contexto para trabajar el catálogo con un agente
 ```
 
 ## Instalación local en Windows (desarrollo)
